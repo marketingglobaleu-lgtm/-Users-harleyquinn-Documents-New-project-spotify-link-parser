@@ -1,0 +1,37 @@
+import crypto from "node:crypto";
+import { cookies } from "next/headers";
+import { NextResponse } from "next/server";
+
+function getRequiredEnv(name: string) {
+  const value = process.env[name];
+  if (!value) {
+    throw new Error(`Missing required environment variable: ${name}`);
+  }
+  return value;
+}
+
+export async function GET() {
+  const clientId = getRequiredEnv("SPOTIFY_CLIENT_ID");
+  const redirectUri = getRequiredEnv("SPOTIFY_REDIRECT_URI");
+  const appUrl = process.env.APP_URL ?? "http://localhost:3000";
+  const state = crypto.randomBytes(16).toString("hex");
+  const cookieStore = await cookies();
+
+  cookieStore.set("spotify_oauth_state", state, {
+    httpOnly: true,
+    secure: appUrl.startsWith("https://"),
+    sameSite: "lax",
+    path: "/",
+    maxAge: 60 * 10
+  });
+
+  const params = new URLSearchParams({
+    client_id: clientId,
+    response_type: "code",
+    redirect_uri: redirectUri,
+    state,
+    scope: "playlist-read-private playlist-read-collaborative"
+  });
+
+  return NextResponse.redirect(`https://accounts.spotify.com/authorize?${params.toString()}`);
+}

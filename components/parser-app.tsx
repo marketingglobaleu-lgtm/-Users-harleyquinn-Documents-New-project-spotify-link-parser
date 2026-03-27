@@ -210,10 +210,26 @@ export function ParserApp() {
             track_number: null,
             disc_number: null,
             duration_ms: null,
-            spotify_track_url: null
-          };
-        })
-        .filter((item): item is ManualImportItem => Boolean(item))
+              spotify_track_url: null
+            };
+          })
+        .filter(
+          (
+            item
+          ): item is {
+            source_type: "playlist";
+            source_url: string;
+            source_id: string;
+            position: null;
+            artist_name: string;
+            track_title: string;
+            album_name: string | null;
+            track_number: null;
+            disc_number: null;
+            duration_ms: null;
+            spotify_track_url: null;
+          } => Boolean(item)
+        )
         .map((item, index) => ({
           ...item,
           position: index + 1

@@ -11,6 +11,7 @@ export async function GET(request: Request) {
   const cookieStore = await cookies();
   const storedState = cookieStore.get("spotify_oauth_state")?.value;
   const origin = url.origin;
+  const redirectUri = `${origin}/api/auth/spotify/callback`;
 
   if (error) {
     return NextResponse.redirect(`${origin}/?spotifyAuthError=${encodeURIComponent(error)}`);
@@ -21,7 +22,7 @@ export async function GET(request: Request) {
   }
 
   try {
-    const session = await exchangeSpotifyCodeForSession(code);
+    const session = await exchangeSpotifyCodeForSession(code, redirectUri);
     await saveUserSession(session);
     cookieStore.delete("spotify_oauth_state");
     logEvent("spotify_connected", {});

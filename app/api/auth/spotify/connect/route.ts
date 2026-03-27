@@ -10,11 +10,12 @@ function getRequiredEnv(name: string) {
   return value;
 }
 
-export async function GET() {
+export async function GET(request: Request) {
   const clientId = getRequiredEnv("SPOTIFY_CLIENT_ID");
-  const redirectUri = getRequiredEnv("SPOTIFY_REDIRECT_URI");
   const state = crypto.randomBytes(16).toString("hex");
   const cookieStore = await cookies();
+  const origin = new URL(request.url).origin;
+  const redirectUri = `${origin}/api/auth/spotify/callback`;
   const isSecure = redirectUri.startsWith("https://");
 
   cookieStore.set("spotify_oauth_state", state, {

@@ -66,10 +66,14 @@ export async function clearUserSession() {
   cookieStore.delete(COOKIE_NAME);
 }
 
-export async function exchangeSpotifyCodeForSession(code: string): Promise<SpotifyUserSession> {
+export async function exchangeSpotifyCodeForSession(
+  code: string,
+  redirectUriOverride?: string
+): Promise<SpotifyUserSession> {
   const clientId = getRequiredEnv("SPOTIFY_CLIENT_ID");
   const clientSecret = getRequiredEnv("SPOTIFY_CLIENT_SECRET");
-  const redirectUri = getRequiredEnv("SPOTIFY_REDIRECT_URI");
+  const redirectUri =
+    redirectUriOverride ?? getRequiredEnv("SPOTIFY_REDIRECT_URI");
 
   const response = await fetch("https://accounts.spotify.com/api/token", {
     method: "POST",

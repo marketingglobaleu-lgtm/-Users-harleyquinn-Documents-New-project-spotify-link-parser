@@ -67,6 +67,14 @@ function getArtistMetaSafe(response: ParseApiResponse | null): ArtistResponse | 
   return response.artist ?? null;
 }
 
+function getWarnings(response: ParseApiResponse | null): string[] {
+  if (!response || !("warnings" in response) || !response.warnings) {
+    return [];
+  }
+
+  return response.warnings;
+}
+
 export function ParserApp() {
   const [input, setInput] = useState(EXAMPLE_INPUTS[0]);
   const [response, setResponse] = useState<ParseApiResponse | null>(null);
@@ -101,6 +109,7 @@ export function ParserApp() {
   }, [response]);
 
   const artist = useMemo(() => getArtistMetaSafe(response), [response]);
+  const warnings = useMemo(() => getWarnings(response), [response]);
 
   async function handleParse() {
     setError(null);
@@ -447,9 +456,9 @@ export function ParserApp() {
           </div>
         ) : null}
 
-        {response?.warnings?.length ? (
+        {warnings.length ? (
           <div className="mt-4 rounded-3xl border border-[color:var(--border)] bg-white/60 px-4 py-3 text-sm text-[color:var(--muted)]">
-            {response.warnings.join(" ")}
+            {warnings.join(" ")}
           </div>
         ) : null}
 

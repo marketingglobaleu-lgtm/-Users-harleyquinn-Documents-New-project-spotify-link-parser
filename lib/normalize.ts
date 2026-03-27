@@ -95,7 +95,7 @@ export function normalizePlaylistTracks(
   playlist: SimplifiedPlaylistWithTracks,
   sourceUrl: string
 ): NormalizedTrackRow[] {
-  return playlist.tracks.items
+  const rows = playlist.tracks.items
     .map((item, index) => {
       const track = item.track;
       if (!track) return null;
@@ -115,6 +115,8 @@ export function normalizePlaylistTracks(
       };
     })
     .filter((item): item is NormalizedTrackRow => Boolean(item));
+
+  return rows;
 }
 
 export function normalizeArtistMetadata(artist: {

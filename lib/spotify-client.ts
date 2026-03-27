@@ -2,6 +2,8 @@ import "server-only";
 import SpotifyWebApi from "spotify-web-api-node";
 import { normalizeArtistMetadata } from "@/lib/normalize";
 
+type SpotifyWebApiClient = any;
+
 function getRequiredEnv(name: string) {
   const value = process.env[name];
   if (!value) {
@@ -69,7 +71,7 @@ export function createSpotifyUserClient(accessToken: string) {
   return client;
 }
 
-export async function getTrackMetadata(client: SpotifyWebApi, trackId: string) {
+export async function getTrackMetadata(client: SpotifyWebApiClient, trackId: string) {
   try {
     const response = await client.getTrack(trackId);
     return response.body;
@@ -78,7 +80,7 @@ export async function getTrackMetadata(client: SpotifyWebApi, trackId: string) {
   }
 }
 
-export async function getAlbumWithTracks(client: SpotifyWebApi, albumId: string) {
+export async function getAlbumWithTracks(client: SpotifyWebApiClient, albumId: string) {
   try {
     const albumResponse = await client.getAlbum(albumId);
     const initialAlbum = albumResponse.body;
@@ -107,7 +109,7 @@ export async function getAlbumWithTracks(client: SpotifyWebApi, albumId: string)
   }
 }
 
-export async function getArtistMetadata(client: SpotifyWebApi, artistId: string) {
+export async function getArtistMetadata(client: SpotifyWebApiClient, artistId: string) {
   try {
     const response = await client.getArtist(artistId);
     return normalizeArtistMetadata(response.body);
@@ -116,7 +118,7 @@ export async function getArtistMetadata(client: SpotifyWebApi, artistId: string)
   }
 }
 
-export async function getPlaylistWithTracks(client: SpotifyWebApi, playlistId: string) {
+export async function getPlaylistWithTracks(client: SpotifyWebApiClient, playlistId: string) {
   try {
     const playlistResponse = await client.getPlaylist(playlistId);
     const basePlaylist = playlistResponse.body;

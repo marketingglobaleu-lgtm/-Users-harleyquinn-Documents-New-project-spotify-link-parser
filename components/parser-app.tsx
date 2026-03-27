@@ -59,10 +59,6 @@ function parseManualLine(line: string, sourceUrl?: string): ManualImportItem | n
   };
 }
 
-function getArtistMeta(response: ParseApiResponse): ArtistResponse | null {
-  return response.resourceType === "artist" ? response.artist : null;
-}
-
 function getArtistMetaSafe(response: ParseApiResponse | null): ArtistResponse | null {
   if (!response || response.resourceType !== "artist") {
     return null;

@@ -95,26 +95,26 @@ export function normalizePlaylistTracks(
   playlist: SimplifiedPlaylistWithTracks,
   sourceUrl: string
 ): NormalizedTrackRow[] {
-  const rows = playlist.tracks.items
-    .map((item, index) => {
-      const track = item.track;
-      if (!track) return null;
+  const rows: NormalizedTrackRow[] = [];
 
-      return {
-        source_type: "playlist" as const,
-        source_url: sourceUrl,
-        source_id: playlist.id,
-        position: index + 1,
-        artist_name: track.artists.map((artist) => artist.name).join(", "),
-        track_title: track.name,
-        album_name: track.album?.name ?? null,
-        track_number: track.track_number ?? null,
-        disc_number: track.disc_number ?? null,
-        duration_ms: track.duration_ms ?? null,
-        spotify_track_url: track.external_urls?.spotify ?? null
-      };
-    })
-    .filter((item): item is NormalizedTrackRow => Boolean(item));
+  playlist.tracks.items.forEach((item, index) => {
+    const track = item.track;
+    if (!track) return;
+
+    rows.push({
+      source_type: "playlist",
+      source_url: sourceUrl,
+      source_id: playlist.id,
+      position: index + 1,
+      artist_name: track.artists.map((artist) => artist.name).join(", "),
+      track_title: track.name,
+      album_name: track.album?.name ?? null,
+      track_number: track.track_number ?? null,
+      disc_number: track.disc_number ?? null,
+      duration_ms: track.duration_ms ?? null,
+      spotify_track_url: track.external_urls?.spotify ?? null
+    });
+  });
 
   return rows;
 }

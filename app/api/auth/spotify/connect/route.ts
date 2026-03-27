@@ -11,28 +11,44 @@ function getRequiredEnv(name: string) {
 }
 
 export async function GET(request: Request) {
-  const clientId = getRequiredEnv("SPOTIFY_CLIENT_ID");
-  const state = crypto.randomBytes(16).toString("hex");
-  const cookieStore = await cookies();
-  const origin = new URL(request.url).origin;
-  const redirectUri = `${origin}/api/auth/spotify/callback`;
-  const isSecure = redirectUri.startsWith("https://");
+  try {
+    const clientId = getRequiredEnv("SPOTIFY_CLIENT_ID");
+    const state = crypto.randomBytes(16).toString("hex");
+    const cookieStore = await cookies();
+    const origin = new URL(request.url).origin;
+    const redirectUri = `${origin}/api/auth/spotify/callback`;
+    const isSecure = redirectUri.startsWith("https://");
 
-  cookieStore.set("spotify_oauth_state", state, {
-    httpOnly: true,
-    secure: isSecure,
-    sameSite: "lax",
-    path: "/",
-    maxAge: 60 * 10
-  });
+    cookieStore.set("spotify_oauth_state", state, {
+      httpOnly: true,
+      secure: isSecure,
+      sameSite: "lax",
+      path: "/",
+      maxAge: 60 * 10
+    });
 
-  const params = new URLSearchParams({
-    client_id: clientId,
-    response_type: "code",
-    redirect_uri: redirectUri,
-    state,
-    scope: "playlist-read-private playlist-read-collaborative"
-  });
+    const params = new URLSearchParams({
+      client_id: clientId,
+      response_type: "code",
+      redirect_uri: redirectUri,
+      state,
+      scope: "playlist-read-private playlist-read-collaborative"
+    });
 
-  return NextResponse.redirect(`https://accounts.spotify.com/authorize?${params.toString()}`);
+    return NextResponse.redirect(`https://accounts.spotify.com/authorize?${params.toString()}`);
+  } catch (error) {
+    const origin = new URL(request.url).origin;
+    const redirectUri = `${origin}/api/auth/spotify/callback`;
+    const message = error instanceof Error ? error.message : "Unknown connect error.";
+    const details = {
+      message,
+      origin,
+      redirectUri,
+      hasSpotifyClientId: Boolean(process.env.SPOTIFY_CLIENT_ID),
+      hasSpotifyClientSecret: Boolean(process.env.SPOTIFY_CLIENT_SECRET),
+      hasSessionSecret: Boolean(process.env.SESSION_ENCRYPTION_SECRET)
+    };
+
+    return NextResponse.json(details, { status: 500 });
+  }
 }

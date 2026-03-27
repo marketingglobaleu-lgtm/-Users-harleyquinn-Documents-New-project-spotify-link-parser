@@ -447,7 +447,7 @@ export function ParserApp() {
           </div>
         ) : null}
 
-        {"warnings" in (response ?? {}) && response.warnings?.length ? (
+        {response?.warnings?.length ? (
           <div className="mt-4 rounded-3xl border border-[color:var(--border)] bg-white/60 px-4 py-3 text-sm text-[color:var(--muted)]">
             {response.warnings.join(" ")}
           </div>
